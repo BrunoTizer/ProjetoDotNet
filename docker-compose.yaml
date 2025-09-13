@@ -1,0 +1,44 @@
+﻿version: '3.8'
+
+services:
+  
+  # Serviço do Banco de Dados MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_appdb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword123
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: AppPassword123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+
+  # Serviço do Adminer para gerenciar o banco de dados
+  adminer:
+    image: adminer:4.8.1
+    container_name: adminer_ui
+    restart: always
+    ports:
+      - "8083:8080"
+    depends_on:
+      - mysql # Deve depender do serviço 'mysql'
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql # O servidor padrão é o serviço 'mysql'
+    networks:
+      - app_network # Precisa estar na mesma rede que o mysql
+
+# Definição dos volumes
+volumes:
+  mysql_data:
+    driver: local
+
+# Definição das redes
+networks:
+  app_network:
+    driver: bridge
